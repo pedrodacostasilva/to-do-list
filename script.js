@@ -1,58 +1,55 @@
-let listElement = document.querySelector("#app ul");
-let input = document.querySelector("#app input");
-let button = document.querySelector("#app button");
+let input = document.querySelector("#input");
+let button = document.querySelector("#button");
+let list = document.querySelector("#list");
 
-tarefas = JSON.parse(localStorage.getItem("@toDoList")) || [];
+tarefas = JSON.parse(localStorage.getItem("@ToDoList"))  || [];
+
+function addToDo() {
+  event.preventDefault();
+
+  if (input.value === "") {
+    alert("Digite uma tarefa");
+    return false;
+  } else {
+    tarefas.push(input.value);
+
+    input.value = "";
+  }
+
+  renderTodos();
+}
+
+button.addEventListener("click", addToDo);
 
 function renderTodos() {
-  listElement.innerHTML = "";
+  let ul = document.querySelector("#list ul");
+  ul.innerHTML = "";
 
-  tarefas.map((todo) => {
+  tarefas.map((todo, posicao) => {
     let liElement = document.createElement("li");
-    let tarefaText = document.createTextNode(todo);
+    liElement.innerText = todo;
 
-    let linkElement = document.createElement("a")
+    ul.appendChild(liElement);
+
+    let linkElement = document.createElement("a");
+    linkElement.innerText = " Excluir";
     linkElement.setAttribute("href", "#");
 
-    let linkText = document.createTextNode(" Excluir");
-    linkElement.appendChild(linkText);
+    linkElement.setAttribute("onclick", `deleteToDo(${posicao})`);
 
-    let posicao = tarefas.indexOf(todo)
+    liElement.appendChild(linkElement);
 
-    linkElement.setAttribute("onclick", `deleteTodo(${posicao})`)
-
-    liElement.appendChild(tarefaText);
-    liElement.appendChild(linkElement)
-    listElement.appendChild(liElement)
+    saveData();
   });
+}
+
+function deleteToDo(posicao) {
+  tarefas.splice(posicao, 1);
+  renderTodos();
 }
 
 renderTodos();
 
-function addToDo() {
-  if (input.value === "") {
-    alert("Digite alguma tarefa");
-    return false;
-  } else {
-    let newToDo = input.value;
-    tarefas.push(newToDo);
-    input.value = "";
-
-    renderTodos();
-    saveData();
-  }
-}
-
-button.onclick = addToDo;
-
-
-function deleteTodo(posicao) {
-    tarefas.splice(posicao, 1);
-    renderTodos();
-    saveData();
-}
-
-
 function saveData() {
-    localStorage.setItem("@toDoList", JSON.stringify(tarefas))
+    localStorage.setItem("@ToDoList", JSON.stringify(tarefas));
 }
